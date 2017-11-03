@@ -1,0 +1,517 @@
+<ion-view view-title="{{ecode | uppercase}} ({{subject_title | capitalize}})">
+	<md-content class="term-header no-scroll">
+		<div layout="row" layout-sm="column" class="div-loading" layout-align="space-around" ng-if="vm.loading">
+ 			<div class="div-loading_content">
+ 				<md-progress-circular md-mode="indeterminate"></md-progress-circular>
+ 				<span class="loading-text">Loading...</span>
+ 			</div>
+		</div>
+		<md-toolbar md-scroll-shrink >
+			<md-tabs layout="column" md-dynamic-height md-border-bottom md-no-pagination="true" md-stretch-tabs="always" md-no-bar>
+				
+                <md-tab label="PRELIM" ng-disabled="$root.disableOnLoading" ng-click="term('1')"></md-tab>
+                <md-tab label="MIDTERM" ng-disabled="$root.disableOnLoading" ng-click="term('2')"></md-tab>
+                <md-tab label="PRE-FINAL" ng-disabled="$root.disableOnLoading" ng-click="term('3')"></md-tab>
+                <md-tab label="FINAL" ng-disabled="$root.disableOnLoading" ng-click="term('4')"></md-tab>
+			</md-tabs>
+  		</md-toolbar>
+        
+        <md-content ng-if="$root.emptyStudents && gridLoaded">
+            <div class="container_empty">
+                <div ng-click="$root.modal_addStudent($event)">
+                    <ng-md-icon icon="people" style="fill: gray" size="150"></ng-md-icon>
+                    <p>There are no students in this class.<br> Add or Import Students first.</p>
+                </div>
+            </div>
+        </md-content>
+
+        <md-content ng-if="!$root.emptyStudents" class="no-scroll">
+      		<md-content ng-if="gridLoaded" class="md-padding no-scroll gradesheet">
+                <div ui-grid="gridOptions" class="grid" ui-grid-pinning ui-grid-cellnav ui-grid-auto-resize ui-grid-resize-columns ui-grid-exporter></div>
+            </md-content>
+        </md-content>
+
+		<div class="type-footer">
+			<md-tabs class="ink-top record-type" layout="column" md-no-pagination="true" md-dynamic-height md-stretch-tabs="always" md-no-bar>
+                <md-tab label="ATTENDANCE" ng-disabled="$root.disableOnLoading" ng-click="$root.recordType('1')"></md-tab>
+                <md-tab label="QUIZ" ng-disabled="$root.disableOnLoading" ng-click="$root.recordType('2')"></md-tab>
+                <md-tab label="ENTRY" ng-disabled="$root.disableOnLoading" ng-click="$root.recordType('3')"></md-tab>
+			</md-tabs>
+		</div>
+
+	</md-content>
+</ion-view>
+
+<script type="text/ng-template" id="modal_studentForm.html">
+    <md-dialog aria-label="{{action}} Student">
+    <form name="form.studentForm" novalidate rc-submit="saveStudent(dup_student)">
+        <md-toolbar class="bg-green">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" ng-click="vm.close()">
+                    <i class="icon ion-close" aria-label="Close dialog"></i>
+                </md-button>
+                <span class="dialog-title">{{ action }} Student</span>
+                <span flex></span>
+                <md-button type="submit">Submit</md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.studentForm.$submitted || form.studentForm.student_no.$touched" ng-messages="form.studentForm.student_no.$error">
+                        <span ng-message="required">Student No. is required &nbsp;</span> 
+                    </div>
+                    <input md-no-asterisk type="text" class="capitalize" name="student_no" ng-model="dup_student.student_no" placeholder="Student No." required>
+                </md-input-container>
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.studentForm.$submitted || form.studentForm.last_name.$touched" ng-messages="form.studentForm.last_name.$error">
+                        <span ng-message="required">Last name is required &nbsp;</span> 
+                    </div>
+                    <input md-no-asterisk type="text" class="capitalize" name="last_name" ng-model="dup_student.last_name" placeholder="Last name" required>
+                </md-input-container>
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.studentForm.$submitted || form.studentForm.first_name.$touched" ng-messages="form.studentForm.first_name.$error">
+                        <span ng-message="required">First name is required &nbsp;</span> 
+                    </div>
+                    <input md-no-asterisk type="text" class="capitalize" name="first_name" ng-model="dup_student.first_name" placeholder="First name" required>
+                </md-input-container>
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.studentForm.$submitted || form.studentForm.mi.$touched" ng-messages="form.studentForm.mi.$error">
+                        <span ng-message="required">Middle initial is required &nbsp;</span> 
+                    </div>
+                    <input md-no-asterisk type="text" class="capitalize" name="mi" ng-model="dup_student.mi" placeholder="M.I" maxlength="1" required>
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+    </form>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="modal_option.html">
+    <md-dialog aria-label="{{action}} Student">
+        <md-toolbar class="bg-green">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" ng-click="vm.close()">
+                    <i class="icon ion-close" aria-label="Close dialog"></i>
+                </md-button>
+                <span class="dialog-title">{{studentData.entity.fullname}}</span>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="padding-5">
+            	<ion-list>
+    	            <div class="ink btm-border"
+    	            	 ng-repeat="o in studentOptions"
+    	                 ng-click="vm[o.action](studentData,$event)">
+    	                <md-button class="item md-raised"><ng-md-icon class="icon-in-option" icon="{{o.optionIcon}}" ></ng-md-icon><span class="option-name">{{o.optionName}}</span></md-button>
+    	            </div>
+    	        </ion-list>
+            </div>
+        </md-dialog-content>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="modal_addAttendance.html">
+    <md-dialog aria-label="{{dup_attendance.action}} attendance date">
+    <form name="form.attendanceForm" novalidate rc-submit="saveAttendance()">
+
+        <md-toolbar class="bg-green">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" ng-click="vm.close()">
+                    <i class="icon ion-close" aria-label="Close dialog"></i>
+                </md-button>
+                <span class="dialog-title">{{dup_attendance.action}} attendance date</span>
+                <span flex></span>
+                <md-button type="submit">Save</md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <label>Date : <span flex class="pull-right">Day : <b>{{selectedDay}}</b></span></label>
+                <md-input-container flex-gt-md="30">
+                    <input time="false" date="true" mdc-datetime-picker type="text" aria-label="Add attendance date"
+                           ng-model="dup_attendance.attendance_date" min-date="minDate" max-date="maxDate" format="MM-DD-YYYY">
+                </md-input-container>
+                <p>Class Days : <b>{{vm.class_days}}</b></p>
+            </div>
+
+        </md-dialog-content>
+    </form>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="modal_importStudents.html">
+    <md-dialog aria-label="Import students">
+        <md-toolbar class="bg-green">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" ng-click="vm.close()">
+                    <i class="icon ion-close" aria-label="Close dialog"></i>
+                </md-button>
+                <span class="dialog-title">Import Students</span>
+                <span flex></span>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="padding">
+                <p><strong>Import a CSV file only. Format is:</strong></p>
+                <p>Student_no,Last_name,First_name,Mi</p>
+                <p>C16-01-3125-MAN121,Rizal,Jose,A</p>
+                <br>
+                <input type="file" id="files">
+            </div>
+        </md-dialog-content>
+
+        <md-dialog-actions>
+            <span flex></span>
+            <md-button ng-click="vm.importStudentsFromFile()">Import</md-button>
+        </md-dialog-actions>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="modal_manageAttendance.html">
+    <md-dialog aria-label="{{dup_attendance.action}} attendance">
+        <md-toolbar class="bg-green">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" ng-click="vm.close()">
+                    <i class="icon ion-close" aria-label="Close dialog"></i>
+                </md-button>
+                <span class="dialog-title">{{dup_attendance.action}} attendance</span>
+                <span flex></span>
+            </div>
+        </md-toolbar>
+
+        <div layout="column" layout-align="center center" class="manage-attendanceTermContainer bg-green padding-10 btm_box-shadow">
+            <div>
+                <span class="manage-attendanceTerm">{{showTerm}} ({{!$root.classType ? "LEC" : "LAB"}})</span>
+                <md-button class="md-icon-button toggleChangeType" ng-click="$root.changeType()" ng-class="{'md-secondary' : toggleChangeType}">
+                    <md-tooltip md-direction="bottom" ng-if="class_type">Switch to {{$root.classType ? "LEC" : "LAB"}}</md-tooltip>
+                    <md-tooltip md-direction="bottom" ng-if="!class_type">Unable to switch, this is a lecture class</md-tooltip>
+                    <md-icon>loop</md-icon>
+                </md-button>
+            </div>
+        </div>
+
+        <md-dialog-content>
+            <div class="container_empty" ng-if="!vm.dates.length">
+                <div ng-click="$root.modal_addAttendance($event)">
+                    <ng-md-icon icon="check_box" style="fill: gray" size="120"></ng-md-icon>
+                    <p>There are no attendance dates in this term.<br>Add attendance date to see it here.</p>
+                </div>
+            </div>
+            <md-list>
+                <md-list-item class="md-3-line" ng-repeat="d in vm.dates">
+                    <div class="md-list-item-text">
+                        <h3><b>{{d.field}}</b></h3>
+                        <h4>{{d.field | toCompleteDay}}</h4>
+                        <p><ng-md-icon icon="check" style="fill:green"></ng-md-icon><span>{{!$root.classType ? d.lecState.stateP : d.labState.stateP}}</span>
+                           <ng-md-icon icon="close" style="fill:red"></ng-md-icon><span>{{!$root.classType ? d.lecState.stateA : d.labState.stateA}}</span>
+                           <ng-md-icon icon="access_time" style="fill:orange"></ng-md-icon><span>{{!$root.classType ? d.lecState.stateL : d.labState.stateL}}</span>
+                           <ng-md-icon icon="directions_walk" style="fill:gray"></ng-md-icon><span>{{!$root.classType ? d.lecState.stateE : d.labState.stateE}}</span>
+                        </p>
+                    </div>
+                    <md-button class="md-secondary" ng-click="vm.deleteAttendanceDate(d)">Delete</md-button>
+                    <md-divider ng-if="!$last"></md-divider>
+                </md-list-item>
+            </md-list>
+        </md-dialog-content>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="modal_manageQuiz.html">
+    <md-dialog aria-label="{{dup_quiz.action}} quiz">
+        <md-toolbar class="bg-green">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" ng-click="vm.close()">
+                    <i class="icon ion-close" aria-label="Close dialog"></i>
+                </md-button>
+                <span class="dialog-title">{{dup_quiz.action}} quiz</span>
+                <span flex></span>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="container_empty" ng-if="!vm.quizzes.length">
+                <div ng-click="$root.modal_addQuiz($event)">
+                    <ng-md-icon icon="check_box" style="fill: gray" size="120"></ng-md-icon>
+                    <p>There are no quizzes in this term.<br>Add quizzes to see it here.</p>
+                </div>
+            </div>
+            <md-list>
+                <md-list-item class="md-3-line" ng-repeat="d in vm.quizzes">
+                    <div class="md-list-item-text">
+                        <h3 class="ucwords"><b>{{d.field}}</b></h3>
+                        <h4>{{d.date}} ({{d.date | toCompleteDay}})</h4>
+                        <h4>Max Score: {{d.max_score}}</h4>
+                    </div>
+                    <md-button class="md-secondary" ng-click="vm.deleteQuizColumn(d)">Delete</md-button>
+                    <md-divider ng-if="!$last"></md-divider>
+                </md-list-item>
+            </md-list>
+        </md-dialog-content>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="modal_attendanceData.html">
+    <md-dialog aria-label="Set attendance">
+    <form name="form.attendanceDataForm" novalidate rc-submit="saveAttendanceData()">
+        <div layout="column" class="padding24-bot20">
+            <div layout="column" layout-align="center center" class="mb-15">
+                <span class="attendanceData-date">{{toStandardDate(dup_attendanceData.date)}}</span>
+            </div>
+            <span class="attendanceData-name">{{dup_attendanceData.fullname}}</span>
+        </div>
+
+        <md-dialog-content>
+            <div class="md-dialog-content padding-top0">
+                <ion-list>
+                    <div class="ink btm-border"
+                         ng-repeat="a in attendanceDataState">
+                        <md-button class="item button" ng-click="vm[a.action](a.params)"><ng-md-icon class="icon-in-option" icon="{{a.optionIcon}}" style="fill: {{a.color}}"></ng-md-icon><span class="option-name">{{a.optionName}}</span></md-button>
+                    </div>
+                </ion-list>
+            </div>
+        </md-dialog-content>
+
+        <md-dialog-actions>
+            <span flex></span>
+            <md-button ng-click="vm.close()">Cancel</md-button>
+        </md-dialog-actions>
+    </form>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="modal_addQuiz.html">
+    <md-dialog aria-label="{{dup_quiz.action}} quiz column">
+    <form name="form.quizForm" novalidate rc-submit="saveQuiz()">
+        <md-toolbar class="bg-green">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" ng-click="vm.close()">
+                    <i class="icon ion-close" aria-label="Close dialog"></i>
+                </md-button>
+                <span class="dialog-title">{{dup_quiz.action}} quiz column</span>
+                <span flex></span>
+                <md-button type="submit">Save</md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.quizForm.$submitted || form.quizForm.column_name.$touched" ng-messages="form.quizForm.column_name.$error">
+                        <span ng-message="required">Column name is required &nbsp;</span> 
+                    </div>
+                    <input md-no-asterisk type="text" class="ucwords" name="column_name" ng-model="dup_quiz.column_name" placeholder="Column Name" required md-maxlength="10" maxlength="10">
+                </md-input-container>
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.quizForm.$submitted || form.quizForm.max_score.$touched" ng-messages="form.quizForm.max_score.$error">
+                        <span ng-message="required">Max score is required &nbsp;</span> 
+                    </div>
+                    <input md-no-asterisk type="number" name="max_score" ng-model="dup_quiz.max_score" valid-number placeholder="Max score" required>
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+    </form>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="modal_quizData.html">
+    <md-dialog aria-label="Set attendance">
+    <form name="form.quizDataForm" novalidate rc-submit="saveQuizData()">
+        <div layout="column" class="padding24-bot20">
+            <div layout="column" layout-align="center center" class="mb-15">
+                <span class="attendanceData-date">{{dup_quizData.column_name}}</span>
+                <span>{{toStandardDate(dup_quizData.date)}}</span>
+                <span>Total Score: <b>{{dup_quizData.max_score}}</b></span>
+            </div>
+            <span class="attendanceData-name">{{dup_quizData.fullname}}</span>
+        </div>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.quizDataForm.$submitted || form.quizDataForm.score.$touched" ng-messages="form.quizDataForm.score.$error">
+                        <span ng-message="required">Score is required &nbsp;</span> 
+                    </div>
+                    <div class="help-block pull-right" ng-if="dup_quizData.error">
+                        <span style="color:red">{{dup_quizData.message}}</span> 
+                    </div>
+                    <input md-no-asterisk type="number" name="score" ng-model="dup_quizData.score" valid-number placeholder="Score" required>
+                </md-input-container>
+
+                <section layout="row" layout-align="center center" layout-wrap>
+                    <md-button class="md-raised md-primary" ng-click="dup_quizData.score = 0">Zero</md-button>
+                    <span flex></span>
+                    <md-button class="md-raised md-primary" ng-click="dup_quizData.score = dup_quizData.max_score">Perfect</md-button>
+                </section>
+            </div>
+        </md-dialog-content>
+
+        <md-dialog-actions>
+            <span flex></span>
+            <md-button ng-click="vm.close()">Cancel</md-button>
+            <md-button type="submit">Submit</md-button>
+        </md-dialog-actions>
+    </form>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="modal_termExamData.html">
+    <md-dialog aria-label="Set exam data">
+    <form name="form.termExamDataForm" novalidate rc-submit="saveTermExamData()">
+        <div layout="column" class="padding24-bot20">
+            <div layout="column" layout-align="center center" class="mb-15">
+                <span class="attendanceData-date">{{dup_termExamData.exam_name | toFullExamName}} ({{!$root.classType ? 'LEC' : 'LAB'}})</span>
+            </div>
+            <span class="attendanceData-name">{{dup_termExamData.fullname}}</span>
+        </div>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.termExamDataForm.$submitted || form.termExamDataForm.score.$touched" ng-messages="form.termExamDataForm.score.$error">
+                        <span ng-message="required">Score is required &nbsp;</span> 
+                    </div>
+                    <div class="help-block pull-right" ng-if="dup_termExamData.error">
+                        <span style="color:red">{{dup_termExamData.message}}</span> 
+                    </div>
+                    <input md-no-asterisk type="number" name="score" ng-model="dup_termExamData.exam_score" valid-number placeholder="Score" required>
+                </md-input-container>
+
+                <section layout="row" layout-align="center center" layout-wrap>
+                    <md-button class="md-raised md-primary" ng-click="dup_termExamData.exam_score = 0">Zero</md-button>
+                    <span flex></span>
+                    <md-button class="md-raised md-primary" ng-click="dup_termExamData.exam_score = dup_termExamData.max_score">Perfect</md-button>
+                </section>
+            </div>
+        </md-dialog-content>
+
+        <md-dialog-actions>
+            <span flex></span>
+            <md-button ng-click="vm.close()">Cancel</md-button>
+            <md-button type="submit">Submit</md-button>
+        </md-dialog-actions>
+    </form>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="modal_CSData.html">
+    <md-dialog aria-label="Set cs data">
+    <form name="form.CSDataForm" novalidate rc-submit="saveCSData()">
+        <div layout="column" class="padding24-bot20">
+            <div layout="column" layout-align="center center" class="mb-15">
+                <span class="attendanceData-date">{{dup_CSData.cs_name | toFullCSName}} ({{!$root.classType ? 'LEC' : 'LAB'}})</span>
+            </div>
+            <span class="attendanceData-name">{{dup_CSData.fullname}}</span>
+        </div>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.CSDataForm.$submitted || form.CSDataForm.score.$touched" ng-messages="form.CSDataForm.score.$error">
+                        <span ng-message="required">Score is required &nbsp;</span> 
+                    </div>
+                    <div class="help-block pull-right" ng-if="dup_CSData.error">
+                        <span style="color:red">{{dup_CSData.message}}</span> 
+                    </div>
+                    <input md-no-asterisk type="number" name="score" ng-model="dup_CSData.cs_score" valid-number placeholder="Score" required>
+                </md-input-container>
+
+                <section layout="row" layout-align="center center" layout-wrap>
+                    <md-button class="md-raised md-primary" ng-click="dup_CSData.cs_score = 0">Zero</md-button>
+                    <span flex></span>
+                    <md-button class="md-raised md-primary" ng-click="dup_CSData.cs_score = dup_CSData.max_score">Perfect</md-button>
+                </section>
+            </div>
+        </md-dialog-content>
+
+        <md-dialog-actions>
+            <span flex></span>
+            <md-button ng-click="vm.close()">Cancel</md-button>
+            <md-button type="submit">Submit</md-button>
+        </md-dialog-actions>
+    </form>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="modal_gradeStatusData.html">
+    <md-dialog aria-label="Set gradestatus data">
+    <form name="form.gradeStatusform" novalidate rc-submit="saveGradeStatusData()">
+        <div layout="column" class="padding24-bot20">
+            <div layout="column" layout-align="center center" class="mb-15">
+                <span class="attendanceData-date">Set Grade Status ({{!$root.classType ? 'LEC' : 'LAB'}})</span>
+            </div>
+            <span class="attendanceData-name">{{gradeStatusData.fullname}}</span>
+        </div>
+                
+        <md-dialog-content>
+            <div class="md-dialog-content padding-top0">
+                <div class="padding-5">
+                    <ion-list>
+                        <div class="ink btm-border"
+                             ng-repeat="o in gradeStatusState"
+                             ng-click="vm[o.action](o.params)">
+                            <md-button class="item md-raised"><ng-md-icon class="icon-in-option" icon="{{o.optionIcon}}" style="fill: {{o.color}}"></ng-md-icon><span class="option-name">{{o.optionName}}</span></md-button>
+                        </div>
+                    </ion-list>
+                </div>
+            </div>
+        </md-dialog-content>
+
+        <md-dialog-actions>
+            <span flex></span>
+            <md-button ng-click="vm.close()">Cancel</md-button>
+        </md-dialog-actions>
+    </form>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="modal_gradesheet.html">
+    <md-dialog aria-label="View lec gradesheet">
+        <md-toolbar class="bg-green">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" ng-click="vm.close()">
+                    <i class="icon ion-close" aria-label="Close dialog"></i>
+                </md-button>
+                <span class="dialog-title">{{gradesheetIs | toFullGradeSheet}} Gradesheet</span>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="vm.export(gradesheetIs)">
+                    <ng-md-icon icon="file_upload" style="fill: white" size="24" ></ng-md-icon> 
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <md-content class="md-padding no-scroll">
+                <div ui-grid="gridOptionsGS" class="grid" ui-grid-pinning ui-grid-cellnav ui-grid-auto-resize ui-grid-resize-columns ui-grid-exporter></div>
+            </md-content>
+        </md-dialog-content>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="modal_leclabgradesheet.html">
+    <md-dialog aria-label="View leclab gradesheet">
+        <md-toolbar class="bg-green">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" ng-click="vm.close()">
+                    <i class="icon ion-close" aria-label="Close dialog"></i>
+                </md-button>
+                <span class="dialog-title">{{gradesheetIs | toFullGradeSheet}} Gradesheet</span>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="vm.export(gradesheetIs)">
+                    <ng-md-icon icon="file_upload" style="fill: white" size="24" ></ng-md-icon> 
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <md-content class="md-padding no-scroll">
+                <div ui-grid="gridOptionsGS" class="grid" ui-grid-pinning ui-grid-cellnav ui-grid-auto-resize ui-grid-resize-columns ui-grid-exporter></div>
+            </md-content>
+        </md-dialog-content>
+    </md-dialog>
+</script>
+

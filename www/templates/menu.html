@@ -1,0 +1,60 @@
+<ion-side-menus enable-menu-with-back-views="false">
+    <ion-side-menu-content>
+        <ion-nav-bar class="bar-gray" ng-class="{expanded: isExpanded, 'has-header-fab-left': hasHeaderFabLeft, 'has-header-fab-right': hasHeaderFabRight}" align-title="left">
+            <ion-nav-back-button class="no-text"></ion-nav-back-button>
+            <ion-nav-buttons side="left">
+                <button class="button button-icon button-clear ion-navicon" menu-toggle="left"></button>
+            </ion-nav-buttons>  
+
+            <ion-nav-buttons side="right">
+                <md-switch class="class-switch" ng-model="$root.classType" ng-change="$root.classTypeChange()" ng-disabled="!$root.class_type || $root.disableOnLoading" aria-label="classType" ng-show="rightNavInSubject">
+                    <span class="class-type" ng-if="!$root.classType">LEC</span>
+                    <span class="class-type" ng-if="$root.classType">LAB</span>
+                </md-switch>
+
+                <md-menu md-position-mode="target-right target" ng-show="rightNavInSubject">
+                    <md-button aria-label="Open options" class="button button-icon button-clear ion-android-more-vertical" ng-disabled="$root.disableOnLoading" ng-click="$mdOpenMenu($event)"></md-button>
+                    <md-menu-content width="3">
+                        <md-menu-item ng-repeat="o in $root.rightNavInSubjectOptions">
+                            <md-button ng-click="$root[o.action](event)">
+                                <div layout="row" flex>
+                                    <p flex>{{o.optionName}}</p>
+                                    <i md-menu-align-target style="margin: auto 3px auto 0;" class="icon-in-option {{o.optionIcon}}"></i>
+                                    <ng-md-icon md-menu-align-target class="icon-in-option" icon="{{o.optionIcon}}" style="margin: 10px auto auto 0; fill: {{o.color}}"></ng-md-icon>
+                                </div>
+                            </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+            </ion-nav-buttons>
+
+
+        </ion-nav-bar>
+        <ion-nav-view name="menuContent" ng-class="{expanded: isExpanded}" ></ion-nav-view>
+    </ion-side-menu-content>
+    <ion-side-menu side="left">
+        <ion-header-bar class="blueviolet-bg expanded">
+            <span class="avatar" style="background: url('resources/logo/teacher_logo.png'); background-size: cover;"></span>
+            <h2>Mobile Class Record</h2>
+        </ion-header-bar>
+        <ion-content class="stable-bg has-expanded-header">
+            <ion-list>
+                <ion-item nav-clear menu-close ui-sref="app.home" class="ink">
+                    <i class="ion-ios-home icon-lg"></i> <span class="menu-text">Home</span>
+                </ion-item>
+                <ion-item nav-clear menu-close ui-sref="app.subject" class="ink">
+                    <i class="ion-ios-book icon-lg"></i> <span class="menu-text">Subject</span>
+                </ion-item>
+                <ion-item nav-clear menu-close ui-sref="app.setting" class="ink">
+                    <i class="ion-ios-gear icon-lg"></i> <span class="menu-text">Setting</span>
+                </ion-item>
+                <ion-item nav-clear menu-close ui-sref="app.help" class="ink">
+                    <i class="ion-ios-help icon-lg"></i> <span class="menu-text">Help</span>
+                </ion-item>
+                <ion-item nav-clear menu-close ng-click="exitApp($event)" class="ink">
+                    <i class="ion-log-out icon-lg"></i> <span class="menu-text">Exit</span>
+                </ion-item>
+            </ion-list>
+        </ion-content>
+    </ion-side-menu>
+</ion-side-menus>

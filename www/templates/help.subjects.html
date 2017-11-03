@@ -1,0 +1,13 @@
+<ion-view view-title="Help - Subjects">
+    <ion-content>
+    	<md-list>
+            <md-list-item class="md-3-line" ng-repeat="q in vm.questions.subject" ng-click="showAnswer = !showAnswer">
+                <div class="md-list-item-text">
+                    <h3 style="white-space: normal !important;"><b>{{q.question}}</b></h3>
+                    <md-item ng-if="showAnswer"><p>{{q.answer}}</p></md-item>
+                </div>
+                <md-divider ng-if="!$last"></md-divider>
+            </md-list-item>
+        </md-list>
+    </ion-content>
+</ion-view>

@@ -1,0 +1,12 @@
+{
+  "name": "ionic-tutorial-pouchdb",
+  "app_id": "",
+  "type": "ionic1",
+  "integrations": {},
+  "watchPatterns": [
+    "scss/**/*",
+    "www/**/*",
+    "!www/lib/**/*",
+    "!www/**/*.map"
+  ]
+}

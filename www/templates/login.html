@@ -1,0 +1,28 @@
+<ion-view view-title="Login" align-title="left">
+    <ion-content class="background">
+        <div style="position: relative;top: 50%;transform: translateY(-50%);" ng-if="loadedData">
+            <div class="hero no-header flat">
+                <div class="content">
+                    <div class="app-icon"></div><br><br>
+                    <span style="font-size:30px;">ACLC <br>Mobile Class Record</span>
+                </div>
+            </div>
+            <div class="padding">
+                <div ng-if="hasPassword" style="background-color: white;padding: 20px 20px">
+                    <form name="form.passwordForm" novalidate rc-submit="loginPassword()">
+                    <md-input-container>
+                        <div class="help-block pull-right" ng-if="form.passwordForm.$submitted || form.passwordForm.password.$touched" ng-messages="form.passwordForm.password.$error">
+                            <span ng-message="required">Password is required &nbsp;</span> 
+                        </div>
+                        <input md-no-asterisk type="password" name="password" ng-model="login.password" placeholder="Password" style="font-size:30px" required>
+                    </md-input-container>       
+                    <div ng-if="errorPassword && !errorPrompt" style="color:red;text-align:center;">Wrong password!</div>
+                    <div ng-if="errorPassword && errorPrompt" style="color:red;text-align:center;">Forgot the password? Ask the developer for master password.</div>
+                    <button class="button button-full button-assertive ink" type="submit">Login</button>
+                    </form>     
+                </div>
+            </div>
+        </div>
+        
+    </ion-content>
+</ion-view>

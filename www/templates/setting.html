@@ -1,0 +1,51 @@
+<ion-view view-title="Setting">
+    <ion-content>
+        <div ng-if="loadedAction" style="height: 100%">
+            <div class="container_empty" style="height: 47% !important">
+                <div class="ink" ng-click="vm.modal_setPassword($event)">
+                    <ng-md-icon icon="security" style="fill: gray" size="100"></ng-md-icon>
+                    <h4>{{actionPassword}} Security Password</h4>
+                </div>
+            </div>
+            
+            <center>
+            <md-checkbox ng-disabled="actionPassword != 'Change'" style="margin:auto" ng-model="vm.enablePassword" ng-click="vm.toggleEnablePassword()">Enable Security Password in Startup</md-checkbox>
+            </center>
+
+            <div class="container_empty" style="height: 47% !important">
+                <div class="ink" ng-click="vm.modal_restoreDefault($event)">
+                    <ng-md-icon icon="restore_page" style="fill: gray" size="100"></ng-md-icon>
+                    <h4>Restore Default</h4>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>
+
+<script type="text/ng-template" id="modal_setPassword.html">
+    <md-dialog aria-label="{{actionPassword}} Password">
+    <form name="form.passwordForm" novalidate rc-submit="savePassword()">
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <h4>{{actionPassword}} Password</h4>
+                <br>
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.passwordForm.$submitted || form.passwordForm.password.$touched" ng-messages="form.passwordForm.password.$error">
+                        <span ng-message="required">Password is required &nbsp;</span> 
+                    </div>
+                    <input md-no-asterisk type="password" name="password" ng-model="dup_security.password" placeholder="Password" required md-maxlength="15" maxlength="15">
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+
+        <md-dialog-actions>
+            <span flex></span>
+            <md-button ng-click="vm.close()">Cancel</md-button>
+            <md-button type="submit">{{actionPassword}}</md-button>
+        </md-dialog-actions>
+
+
+    </form>
+    </md-dialog>
+</script>

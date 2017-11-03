@@ -1,0 +1,99 @@
+{
+  "_args": [
+    [
+      {
+        "name": "pouchdb-adapter-cordova-sqlite",
+        "raw": "pouchdb-adapter-cordova-sqlite",
+        "rawSpec": "",
+        "scope": null,
+        "spec": "latest",
+        "type": "tag"
+      },
+      "C:\\Users\\vaaN\\mcr_v.0.4.4"
+    ]
+  ],
+  "_from": "pouchdb-adapter-cordova-sqlite@latest",
+  "_id": "pouchdb-adapter-cordova-sqlite@1.0.1",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/pouchdb-adapter-cordova-sqlite",
+  "_nodeVersion": "6.7.0",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/pouchdb-adapter-cordova-sqlite-1.0.1.tgz_1477869248977_0.11317649460397661"
+  },
+  "_npmUser": {
+    "email": "nolan@nolanlawson.com",
+    "name": "nolanlawson"
+  },
+  "_npmVersion": "3.10.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "pouchdb-adapter-cordova-sqlite",
+    "raw": "pouchdb-adapter-cordova-sqlite",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/pouchdb-adapter-cordova-sqlite/-/pouchdb-adapter-cordova-sqlite-1.0.1.tgz",
+  "_shasum": "1166decc3cff7ee16aee818203b7cbf75d9a91be",
+  "_shrinkwrap": null,
+  "_spec": "pouchdb-adapter-cordova-sqlite",
+  "_where": "C:\\Users\\vaaN\\mcr_v.0.4.4",
+  "author": {
+    "email": "dale@arandomurl.com",
+    "name": "Dale Harvey"
+  },
+  "bugs": {
+    "url": "https://github.com/nolanlawson/pouchdb-adapter-cordova-sqlite/issues"
+  },
+  "dependencies": {
+    "pouchdb-adapter-websql-core": "6.0.7",
+    "pouchdb-utils": "6.0.7"
+  },
+  "description": "PouchDB adapter using Cordova SQLite Plugin as its data store.",
+  "devDependencies": {
+    "browserify": "^13.1.0",
+    "bundle-collapser": "^1.2.1",
+    "mkdirp": "^0.5.1",
+    "standard": "^7.1.2",
+    "uglify-js": "^2.7.0"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "1166decc3cff7ee16aee818203b7cbf75d9a91be",
+    "tarball": "https://registry.npmjs.org/pouchdb-adapter-cordova-sqlite/-/pouchdb-adapter-cordova-sqlite-1.0.1.tgz"
+  },
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "gitHead": "ae8b15b23bf90c2b3b19555876c8c3db05a29b61",
+  "homepage": "https://github.com/nolanlawson/pouchdb-adapter-cordova-sqlite#readme",
+  "keywords": [],
+  "license": "Apache-2.0",
+  "main": "./lib/index.js",
+  "maintainers": [
+    {
+      "email": "nolan@nolanlawson.com",
+      "name": "nolanlawson"
+    }
+  ],
+  "name": "pouchdb-adapter-cordova-sqlite",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nolanlawson/pouchdb-adapter-cordova-sqlite.git"
+  },
+  "scripts": {
+    "build": "mkdirp dist && browserify -s PouchAdapterCordovaSqlite -p bundle-collapser/plugin . > dist/pouchdb.cordova-sqlite.js && uglifyjs -mc < dist/pouchdb.cordova-sqlite.js > dist/pouchdb.cordova-sqlite.min.js",
+    "prepublish": "npm run build",
+    "test": "standard"
+  },
+  "version": "1.0.1"
+}

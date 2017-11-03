@@ -1,0 +1,67 @@
+<ion-view view-title="Home" hide-back-button="true">
+    <ion-content ng-class="{expanded:$scope.isExpanded}">
+        <div class="hero slide-up" style="background-color:#1C3B4D;">
+            <p style="padding-top:8px;font-size:16px;color:white;">{{dateToday}}</p>
+            <div class="content" ng-if="loaded">
+                <div ng-if="!haveUpcomingClass && !haveCurrentClass" class="no_upcoming_subject">
+                    <ng-md-icon icon="mood" style="fill: white" size="150"></ng-md-icon>
+                    <h2>Enjoy your day!</h2>
+                </div>
+            </div>
+            <div class="content" ng-if="(haveCurrentClass || haveUpcomingClass) && nextClassLoaded">
+                <div class="subject-avatar ink" ng-click="goTo(nextClass.ecode,nextClass.subject_title,nextClass.class_type)" ng-style="{'border': borderOfCircle}">
+                    <h5 class="mtop25" ng-if="!live">{{startClassTimeFromNow}}</h5>
+                    <h5 class="mtop25" ng-if="live" style="color:lawngreen">Started {{elapseTime}}</h5>
+                    <h3 class="subject-title mtop20 capitalize">{{nextClass.subject_title}}</h3>
+                    <h4 class="capitalize">{{nextClass.ecode}}</h4>
+                    <h4 class="capitalize">{{nextClass.start_time}} <span ng-if="nextClass.start_time && nextClass.end_time">-</span> {{nextClass.end_time}}</h4>
+                    <h4 class="capitalize">{{nextClass.room}}</h4>
+                    <h4 class="capitalize nextClass_class_type">{{toType(nextClass.class_type)}}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="tabs tabs-dark tabs-icon-top static">
+            <a ng-click="changeClassToShow('0')" class="tab-item">
+                <i class="icon ion-ios-calendar-outline"></i> Today
+            </a>
+            <a ng-click="changeClassToShow('1')" class="tab-item">
+                <i class="icon ion-navigate"></i> Tomorrow
+            </a>
+        </div>
+        <h4 class="content padding double-padding-x">{{whatToShowClasses}} Classes :</h4>
+
+        <div ng-if="showClass == 0">
+            <div ng-if="vm.classes.today.length == 0 && vm.upcomingClasses.length == 0" class="container_empty" style="height: 99% !important">
+                <p style="font-size:initial">There are no classes today.</p>
+            </div>
+        </div>
+
+        <div ng-if="showClass == 0">
+            <div ng-if="vm.upcomingClasses.length == 0 && vm.classes.today.length != 0" class="container_empty" style="height: 99% !important">
+                <p style="font-size:initial">There are no more upcoming classes today.</p>
+            </div>
+        </div>
+        
+        <div ng-if="showClass == 1">
+            <div ng-if="vm.classes.tomorrow.length == 0" class="container_empty" style="height: 99% !important">
+                <p style="font-size:initial">There are no classes tomorrow.</p>
+            </div>
+        </div>
+
+        <ion-list>
+            <div class="ink btm-border animate-fade"
+                 ng-repeat="b in classesToShow(showClass == 0)| orderBy: 'military_startTime'" 
+                 ng-last-repeat="subjectList" 
+                 ng-click="goTo(b.ecode,b.subject_title,b.class_type)">
+                <a class="item mini-avatar item-icon-right">
+                    <div class="subject-mini-avatar"><span class="subject-letter">{{ b.subject_title | limitTo: 1 }}</pspan></div>
+                    <h2 class="ucwords">{{b.subject_title}}</h2>
+                    <p class="capitalize">{{b.ecode}}</p>
+                    <p class="capitalize">{{b.start_time}} - {{b.end_time}}  <span class="class_type">{{toType(b.class_type)}}</span></p>
+                    <p class="capitalize">{{b.room}}</p>
+                    <p>{{toDay(b.day)}}</p>
+                </a>
+            </div>
+        </ion-list>
+    </ion-content>
+</ion-view>

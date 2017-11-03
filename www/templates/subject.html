@@ -1,0 +1,114 @@
+<ion-view view-title="Subject">
+    <ion-content>
+        <div ng-if="vm.subjects.length == 0" class="container_empty" style="height: 99% !important">
+            <div ng-click="vm.modal_addSubject($event)">
+                <ng-md-icon icon="format_list_bulleted" style="fill: gray" size="150"></ng-md-icon>
+                <p>There are no subjects .<br> Add subjects to see it here.</p>
+            </div>
+        </div>
+
+        <ion-list>
+            <div class="ink btm-border animate-fade"
+                 ng-repeat="b in vm.subjects| orderBy: 'subject_title'" 
+                 ng-last-repeat="subjectList" 
+                 ng-click="goTo(b.ecode,b.subject_title,b.class_type)"
+                 on-swipe-left="options(b,$ev)"
+                 on-hold="options(b,$ev)">
+                <a class="item mini-avatar item-icon-right">
+                    <div class="subject-mini-avatar"><span class="subject-letter">{{ b.subject_title | limitTo: 1 }}</pspan></div>
+                    <h2 class="ucwords">{{b.subject_title}}</h2>
+                    <p class="capitalize">{{b.ecode}}</p>
+                    <p class="capitalize">{{b.start_time}} - {{b.end_time}}  <span class="class_type">{{toType(b.class_type)}}</span></p>
+                    <p class="capitalize">{{b.room}}</p>
+                    <p>{{toDay(b.day)}}</p>
+                </a>
+            </div>
+        </ion-list>
+    </ion-content>
+    <md-button ng-click="vm.modal_addSubject($event)" class="button-fab btn-primary md-fab md-fab-bottom-right" aria-label="addSubject"><i class="icon ion-plus"></i></md-button>
+</ion-view>
+
+<script type="text/ng-template" id="modal_subjectForm.html">
+    <md-dialog aria-label="{{action}} Subject">
+    <form name="form.subjectForm" novalidate rc-submit="saveSubject(dup_subject)">
+        <md-toolbar class="bg-green">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" ng-click="vm.close()">
+                    <i class="icon ion-close" aria-label="Close dialog"></i>
+                </md-button>
+                <h2>{{ action }} Subject</h2>
+                <span flex></span>
+                <md-button type="submit">Save</md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.subjectForm.$submitted || form.subjectForm.ecode.$touched" ng-messages="form.subjectForm.ecode.$error">
+                        <span ng-message="required">Ecode is required &nbsp;</span> 
+                    </div>
+                    <input md-no-asterisk type="text" class="capitalize" name="ecode" ng-model="dup_subject.ecode" placeholder="Ecode" required>
+                </md-input-container>
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.subjectForm.$submitted || form.subjectForm.subject_code.$touched" ng-messages="form.subjectForm.subject_code.$error">
+                        <span ng-message="required">Subject code is required &nbsp;</span> 
+                    </div>
+                    <input md-no-asterisk type="text" class="capitalize" name="subject_code" ng-model="dup_subject.subject_code" placeholder="Subject Code" required>
+                </md-input-container>
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.subjectForm.$submitted || form.subjectForm.subject_title.$touched" ng-messages="form.subjectForm.subject_title.$error">
+                        <span ng-message="required">Subject title is required &nbsp;</span> 
+                    </div>
+                    <input md-no-asterisk type="text" class="ucwords" name="subject_title" ng-model="dup_subject.subject_title" placeholder="Subject Title" required>
+                </md-input-container>
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.subjectForm.$submitted || form.subjectForm.class_type.$touched" ng-messages="form.subjectForm.class_type.$error">
+                        <span ng-message="required">Class type is required &nbsp;</span> 
+                    </div>
+                    <label>Class type</label>
+                    <md-select md-no-asterisk name="class_type" ng-model="dup_subject.class_type" placeholder="Class type" required>
+                        <md-option ng-repeat="c in class_type" ng-value="c.type">{{c.type}}</md-option>
+                    </md-select>
+                    <div class="md-errors-spacer"></div>
+                </md-input-container>
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.subjectForm.$submitted || form.subjectForm.start_time.$touched" ng-messages="form.subjectForm.start_time.$error">
+                        <span ng-message="required">Start time is required &nbsp;</span> 
+                    </div>
+                    <label>Start time</label>
+                    <md-select md-no-asterisk name="start_time" ng-model="dup_subject.start_time" ng-change="startTimeChanged()" placeholder="Start time" required>
+                        <md-option ng-repeat="t in start_time" ng-value="t.time">{{t.time}}</md-option>
+                    </md-select>
+                    <div class="md-errors-spacer"></div>
+                </md-input-container>
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.subjectForm.$submitted || form.subjectForm.end_time.$touched" ng-messages="form.subjectForm.end_time.$error">
+                        <span ng-message="required">End time is required &nbsp;</span> 
+                    </div>
+                    <label>End time</label>
+                    <md-select md-no-asterisk name="end_time" ng-model="dup_subject.end_time" ng-disabled="disable_endTime" placeholder="End time" required>
+                        <md-option ng-repeat="b in end_time" ng-value="b.time">{{b.time}}</md-option>
+                    </md-select>
+                    <div class="md-errors-spacer"></div>
+                </md-input-container>
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.subjectForm.$submitted || form.subjectForm.room.$touched" ng-messages="form.subjectForm.room.$error">
+                        <span ng-message="required">Room is required &nbsp;</span> 
+                    </div>
+                    <input md-no-asterisk type="text" class="capitalize" name="room" ng-model="dup_subject.room" placeholder="Room" required>
+                </md-input-container>
+                <md-input-container>
+                    <div class="help-block pull-right" ng-if="form.subjectForm.$submitted || form.subjectForm.day.$touched" ng-messages="form.subjectForm.day.$error">
+                        <span ng-message="required">Day is required &nbsp;</span> 
+                    </div>
+                    <label>Day</label>
+                    <md-select md-no-asterisk name="day" ng-model="dup_subject.day" placeholder="Day" multiple required>
+                        <md-option ng-repeat="b in subject_days" ng-value="{{b.id}}">{{b.day_name}}</md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+    </form>
+    </md-dialog>
+</script>
